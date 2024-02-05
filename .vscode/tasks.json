@@ -1,0 +1,30 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "dotnet",
+			"task": "build C:\\develop\\transact-etu\\TransactionGenerator\\TransactionGenerator.csproj",
+			"file": "C:\\develop\\transact-etu\\TransactionGenerator\\TransactionGenerator.csproj",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "dotnet: build C:\\develop\\transact-etu\\TransactionGenerator\\TransactionGenerator.csproj"
+		},
+		{
+			"type": "shell",
+			"label": "Run Project",
+			"command": "dotnet",
+			"args": [
+				"run",
+				"--project",
+				"C:\\develop\\transact-etu\\TransactionGenerator\\TransactionGenerator.csproj",
+				"1000000",
+				"10000"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": []
+		}
+	]
+}

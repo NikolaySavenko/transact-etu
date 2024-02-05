@@ -1,0 +1,31 @@
+﻿services:
+  database:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+    deploy:
+      resources:
+        limits:
+          memory: 500mb
+          cpus: '1'
+    
+  bank:
+    image: bank
+    ports:
+      - 8081:8080
+    build:
+      context: .
+      dockerfile: Bank/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - database
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+          cpus: '0.25'
