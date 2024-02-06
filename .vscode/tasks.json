@@ -1,30 +1,90 @@
 {
 	"version": "2.0.0",
 	"tasks": [
-		{
-			"type": "dotnet",
-			"task": "build C:\\develop\\transact-etu\\TransactionGenerator\\TransactionGenerator.csproj",
-			"file": "C:\\develop\\transact-etu\\TransactionGenerator\\TransactionGenerator.csproj",
-			"group": "build",
-			"problemMatcher": [],
-			"label": "dotnet: build C:\\develop\\transact-etu\\TransactionGenerator\\TransactionGenerator.csproj"
-		},
-		{
-			"type": "shell",
-			"label": "Run Project",
-			"command": "dotnet",
-			"args": [
-				"run",
-				"--project",
-				"C:\\develop\\transact-etu\\TransactionGenerator\\TransactionGenerator.csproj",
-				"1000000",
-				"10000"
-			],
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"problemMatcher": []
-		}
-	]
+        {
+            "type": "dotnet",
+            "task": "build C:\\develop\\transact-etu\\TransactionGenerator\\TransactionGenerator.csproj",
+            "file": "C:\\develop\\transact-etu\\TransactionGenerator\\TransactionGenerator.csproj",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "dotnet: build C:\\develop\\transact-etu\\TransactionGenerator\\TransactionGenerator.csproj"
+        },
+        {
+            "type": "shell",
+            "label": "Run Project",
+            "command": "dotnet",
+            "args": [
+                "run",
+                "--project",
+                "C:\\develop\\transact-etu\\TransactionGenerator\\TransactionGenerator.csproj",
+                "1000000",
+                "10000"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "docker-build",
+            "label": "docker-build: debug",
+            "dependsOn": [
+                "build"
+            ],
+            "dockerBuild": {
+                "tag": "transactetu:dev",
+                "target": "base",
+                "dockerfile": "${workspaceFolder}/src/Bank/Dockerfile",
+                "context": "${workspaceFolder}",
+                "pull": true
+            },
+            "netCore": {
+                "appProject": "${workspaceFolder}/src/Bank/Bank.csproj"
+            }
+        },
+        {
+            "type": "docker-build",
+            "label": "docker-build: release",
+            "dependsOn": [
+                "build"
+            ],
+            "dockerBuild": {
+                "tag": "transactetu:latest",
+                "dockerfile": "${workspaceFolder}/src/Bank/Dockerfile",
+                "context": "${workspaceFolder}",
+                "platform": {
+                    "os": "linux",
+                    "architecture": "amd64"
+                },
+                "pull": true
+            },
+            "netCore": {
+                "appProject": "${workspaceFolder}/src/Bank/Bank.csproj"
+            }
+        },
+        {
+            "type": "docker-run",
+            "label": "docker-run: debug",
+            "dependsOn": [
+                "docker-build: debug"
+            ],
+            "dockerRun": {},
+            "netCore": {
+                "appProject": "${workspaceFolder}/src/Bank/Bank.csproj",
+                "enableDebugging": true
+            }
+        },
+        {
+            "type": "docker-run",
+            "label": "docker-run: release",
+            "dependsOn": [
+                "docker-build: release"
+            ],
+            "dockerRun": {},
+            "netCore": {
+                "appProject": "${workspaceFolder}/src/Bank/Bank.csproj"
+            }
+        }
+    ]
 }
