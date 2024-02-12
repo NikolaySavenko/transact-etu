@@ -31,4 +31,4 @@ jobs:
         context: .
         push: true
         file: src/Bank/Dockerfile
-        tags: ghcr.io/${{ env.OWNER_LC }}/bank:${{github.run_id}}
+        tags: ghcr.io/nikolaysavenko/bank:${{github.run_id}}
