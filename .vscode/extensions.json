@@ -1,5 +1,6 @@
 {
 	"recommendations": [
-		"ms-ossdata.vscode-postgresql"
+		"ms-ossdata.vscode-postgresql",
+		"redhat.vscode-yaml"
 	]
 }

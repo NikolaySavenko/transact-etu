@@ -35,7 +35,8 @@
 				"GitHub.remotehub",
 				"GitHub.vscode-github-actions",
 				"ms-ossdata.vscode-postgresql",
-				"mechatroner.rainbow-csv"
+				"mechatroner.rainbow-csv",
+				"redhat.vscode-yaml"
 			]
 		}
 	}

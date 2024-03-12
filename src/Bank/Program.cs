@@ -6,7 +6,7 @@ var builder = WebApplication.CreateSlimBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<BankContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQL")).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+builder.Services.AddDbContext<BankContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQL")));
 
 var app = builder.Build();
 
@@ -52,18 +52,29 @@ api.MapPost("/deposit", async (DepositCommand command, BankContext context) =>
 });
 
 // transfer
-api.MapPost("/transfer", async (TransferCommand command, BankContext context) =>
+api.MapPost("/transfer", (TransferCommand command, BankContext context) =>
 {
-    var account = await context.Accounts.FindAsync(command.From);
-    app.Logger.LogInformation($"From Account {account.Id} has balance {account.Balance}");
-    account.Balance -= command.Amount;
-    await context.SaveChangesAsync();
+    using var transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
+    try
+    {
+        var account = context.Accounts.Find(command.From);
+        app.Logger.LogInformation($"From Account {account.Id} has balance {account.Balance}");
+        account.Balance -= command.Amount;
 
-    var toAccount = await context.Accounts.FindAsync(command.To);
-    app.Logger.LogInformation($"To Account {toAccount.Id} has balance {toAccount.Balance}");
-    toAccount.Balance += command.Amount;
-    await context.SaveChangesAsync();
-    return Results.Ok();
+        var toAccount = context.Accounts.Find(command.To);
+        app.Logger.LogInformation($"To Account {toAccount.Id} has balance {toAccount.Balance}");
+        toAccount.Balance += command.Amount;
+        context.SaveChanges();
+        transaction.Commit();
+
+        return Results.Ok();
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Error transferring money");
+        transaction.Rollback();
+        return Results.BadRequest("Error transferring money");
+    }
 });
 
 
@@ -85,7 +96,7 @@ public class BankContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
         optionsBuilder.EnableSensitiveDataLogging();
-    }
+            }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
