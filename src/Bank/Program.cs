@@ -22,9 +22,12 @@ api.MapPost("/createDatabase", async (BankContext context) =>
     return Results.Ok();
 });
 
-api.MapPost("/deleteDatabase", async (BankContext context) =>
+api.MapPost("/dropAccounts", async (BankContext context) =>
 {
-    await context.Database.EnsureDeletedAsync();
+    //drop table accounts;
+    var accounts = context.Accounts.ToArray();
+    context.Accounts.RemoveRange(accounts);
+    await context.SaveChangesAsync();
     return Results.Ok();
 });
 
