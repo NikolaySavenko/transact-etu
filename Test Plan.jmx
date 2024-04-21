@@ -187,7 +187,7 @@
         <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Expected">
           <stringProp name="delimiter">,</stringProp>
           <stringProp name="fileEncoding"></stringProp>
-          <stringProp name="filename">D:/transact-etu/expected.csv</stringProp>
+          <stringProp name="filename">expected.csv</stringProp>
           <boolProp name="ignoreFirstLine">false</boolProp>
           <boolProp name="quotedData">false</boolProp>
           <boolProp name="recycle">false</boolProp>
@@ -231,7 +231,7 @@
         <hashTree/>
       </hashTree>
       <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Transactions">
-        <stringProp name="filename">D:/transact-etu/transactions.csv</stringProp>
+        <stringProp name="filename">transactions.csv</stringProp>
         <stringProp name="fileEncoding"></stringProp>
         <stringProp name="variableNames">from,to,amount</stringProp>
         <boolProp name="ignoreFirstLine">false</boolProp>
