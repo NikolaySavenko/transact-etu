@@ -7,7 +7,7 @@
             "file": "C:\\develop\\transact-etu\\TransactionGenerator\\TransactionGenerator.csproj",
             "group": "build",
             "problemMatcher": [],
-            "label": "dotnet: build C:\\develop\\transact-etu\\TransactionGenerator\\TransactionGenerator.csproj"
+            "label": "dotnet: build ${workspaceFolder}\\TransactionGenerator\\TransactionGenerator.csproj"
         },
         {
             "type": "shell",
@@ -16,8 +16,8 @@
             "args": [
                 "run",
                 "--project",
-                "C:\\develop\\transact-etu\\TransactionGenerator\\TransactionGenerator.csproj",
-                "1000000",
+                "${workspaceFolder}\\src\\TransactionGenerator\\TransactionGenerator.csproj",
+                "100000",
                 "10000"
             ],
             "group": {
@@ -85,6 +85,14 @@
             "netCore": {
                 "appProject": "${workspaceFolder}/src/Bank/Bank.csproj"
             }
+        },
+        {
+            "type": "dotnet",
+            "task": "build D:\\transact-etu\\src\\TransactionGenerator\\TransactionGenerator.csproj",
+            "file": "D:\\transact-etu\\src\\TransactionGenerator\\TransactionGenerator.csproj",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "dotnet: build D:\\transact-etu\\src\\TransactionGenerator\\TransactionGenerator.csproj"
         }
     ]
 }
