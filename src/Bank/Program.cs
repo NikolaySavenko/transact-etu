@@ -78,6 +78,32 @@ api.MapPost("/transfer", (TransferCommand command, BankContext context) =>
     }
 });
 
+// optimistic transfer
+api.MapPost("/optimisticTransfer", (TransferCommand command, BankContext context) =>
+{
+    using var transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
+    try
+    {
+        var account = context.Accounts.Find(command.From);
+        app.Logger.LogInformation($"From Account {account.Id} has balance {account.Balance}");
+        account.Balance -= command.Amount;
+
+        var toAccount = context.Accounts.Find(command.To);
+        app.Logger.LogInformation($"To Account {toAccount.Id} has balance {toAccount.Balance}");
+        toAccount.Balance += command.Amount;
+        context.SaveChanges();
+        transaction.Commit();
+
+        return Results.Ok();
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "Error transferring money");
+        transaction.Rollback();
+        return Results.BadRequest("Error transferring money");
+    }
+});
+
 
 app.Run();
 
@@ -88,6 +114,7 @@ record TransferCommand(Guid From, Guid To, int Amount);
 public class Account {
     public Guid Id { get; set; }
     public int Balance { get; set; }
+    public uint Version { get; set; }
 }
 
 public class BankContext : DbContext
@@ -97,7 +124,7 @@ public class BankContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
         optionsBuilder.EnableSensitiveDataLogging();
-            }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -105,6 +132,8 @@ public class BankContext : DbContext
         modelBuilder.Entity<Account>().Property(a => a.Balance).HasDefaultValue(0).HasColumnName("balance");
         modelBuilder.Entity<Account>().Property(a => a.Id).HasColumnName("id");
         modelBuilder.Entity<Account>().HasKey(a => a.Id);
+        // optimistic concurency
+        modelBuilder.Entity<Account>().Property(b => b.Version).IsRowVersion();
         base.OnModelCreating(modelBuilder);
     }
 }

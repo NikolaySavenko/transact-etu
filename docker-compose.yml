@@ -41,7 +41,7 @@
       - db
     deploy:
       mode: replicated
-      replicas: 6
+      replicas: 1
       endpoint_mode: vip
       resources:
         limits:
