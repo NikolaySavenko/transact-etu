@@ -23,3 +23,20 @@
 
 Добавил assertions для баланса
 ![alt text](image-3.png)
+
+Яндекс Postgres 1 replica
+![alt text](image-4.png)
+
+3 replica
+![alt text](image-5.png)
+
+10 replica
+![alt text](image-6.png)
+
+10 replica async methods
+![alt text](image-7.png)
+
+увеличил потоки и затык пробили
+дело было в том, что уперлись в потолок
+![alt text](image-8.png)
+

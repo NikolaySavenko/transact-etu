@@ -38,6 +38,15 @@ api.MapPost("/createAccount", async (CreateAccountCommand command, BankContext c
     return Results.Ok();
 });
 
+api.MapGet("/randomAccountId", async (BankContext context) =>
+{
+    var id = await context.Accounts
+        .OrderBy(r => Guid.NewGuid())
+        .Select(account => account.Id)
+        .FirstAsync();
+    return Results.Ok(id);
+});
+
 api.MapGet("/{id:guid}/balance", async (Guid id, BankContext context) =>
 {
     var account = await context.Accounts.FindAsync(id);
@@ -53,53 +62,53 @@ api.MapPost("/deposit", async (DepositCommand command, BankContext context) =>
 });
 
 // transfer
-api.MapPost("/transfer", (TransferCommand command, BankContext context) =>
+api.MapPost("/transfer", async (TransferCommand command, BankContext context) =>
 {
-    using var transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.Serializable);
+    using var transaction = await context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
     try
     {
-        var account = context.Accounts.Find(command.From);
+        var account = await context.Accounts.FindAsync(command.From);
         app.Logger.LogInformation($"From Account {account.Id} has balance {account.Balance}");
         account.Balance -= command.Amount;
 
-        var toAccount = context.Accounts.Find(command.To);
+        var toAccount = await context.Accounts.FindAsync(command.To);
         app.Logger.LogInformation($"To Account {toAccount.Id} has balance {toAccount.Balance}");
         toAccount.Balance += command.Amount;
-        context.SaveChanges();
-        transaction.Commit();
+        await context.SaveChangesAsync();
+        await transaction.CommitAsync();
 
         return Results.Ok();
     }
     catch (Exception ex)
     {
         app.Logger.LogError(ex, "Error transferring money");
-        transaction.Rollback();
+        await transaction.RollbackAsync();
         return Results.BadRequest("Error transferring money");
     }
 });
 
 // optimistic transfer
-api.MapPost("/optimisticTransfer", (TransferCommand command, BankContext context) =>
+api.MapPost("/optimisticTransfer", async (TransferCommand command, BankContext context) =>
 {
-    using var transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
+    using var transaction = await context.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
     try
     {
-        var account = context.Accounts.Find(command.From);
+        var account = await context.Accounts.FindAsync(command.From);
         app.Logger.LogInformation($"From Account {account.Id} has balance {account.Balance}");
         account.Balance -= command.Amount;
 
-        var toAccount = context.Accounts.Find(command.To);
+        var toAccount = await context.Accounts.FindAsync(command.To);
         app.Logger.LogInformation($"To Account {toAccount.Id} has balance {toAccount.Balance}");
         toAccount.Balance += command.Amount;
-        context.SaveChanges();
-        transaction.Commit();
+        await context.SaveChangesAsync();
+        await transaction.CommitAsync();
 
         return Results.Ok();
     }
     catch (Exception ex)
     {
         app.Logger.LogError(ex, "Error transferring money");
-        transaction.Rollback();
+        await transaction.RollbackAsync();
         return Results.BadRequest("Error transferring money");
     }
 });

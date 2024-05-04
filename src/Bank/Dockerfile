@@ -21,4 +21,13 @@ RUN dotnet publish "Bank.csproj" -c $configuration -o /app/publish /p:UseAppHost
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+USER root
+RUN apt-get update && \
+    apt-get install wget postgresql-client --yes && \
+    mkdir --parents ~/.postgresql && \
+    wget "https://storage.yandexcloud.net/cloud-certs/CA.pem" \
+         --output-document ~/.postgresql/root.crt && \
+    chmod 0600 ~/.postgresql/root.crt
+
 ENTRYPOINT ["dotnet", "Bank.dll"]
