@@ -40,3 +40,7 @@
 дело было в том, что уперлись в потолок
 ![alt text](image-8.png)
 
+даже в ажуре получаем too many clients
+![alt text](image-9.png)
+
+"${__jexl3(${amountToSend} / ${balancePartToTransfer})}"
