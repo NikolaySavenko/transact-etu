@@ -43,4 +43,10 @@
 даже в ажуре получаем too many clients
 ![alt text](image-9.png)
 
+к вопросу почему такие короткие тесты и мало распараллелены
+![alt text](image-10.png)
+
 "${__jexl3(${amountToSend} / ${balancePartToTransfer})}"
+
+Новая проблема
+![alt text](image-11.png)

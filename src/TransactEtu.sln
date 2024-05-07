@@ -12,13 +12,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankOrleans.Client", "BankOrleans.Client\BankOrleans.Client.csproj", "{84D17D24-096E-4955-BA27-E7380D35203B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankOrleans.Grains", "BankOrleans.Grains\BankOrleans.Grains.csproj", "{F7A5D17D-AAC6-4E07-8666-F2242C3F950A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankOrleans.Interfaces", "BankOrleans.Interfaces\BankOrleans.Interfaces.csproj", "{865EFB24-BE03-4B46-A901-E6B4F6D72415}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankOrleans.Server", "BankOrleans.Server\BankOrleans.Server.csproj", "{5A3E7738-DCA9-4C35-A4DF-C9A3F09EF299}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankOrleans", "BankOrleans\BankOrleans.csproj", "{437FB485-167B-4C6A-AA11-F7CDE65C910D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9E03BC14-691E-4A20-82D5-5DAC8D1C9916}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -29,5 +36,28 @@ Global
 		{1A931D4F-BB36-49B0-8F6C-9FB8D8EF73B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A931D4F-BB36-49B0-8F6C-9FB8D8EF73B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A931D4F-BB36-49B0-8F6C-9FB8D8EF73B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84D17D24-096E-4955-BA27-E7380D35203B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84D17D24-096E-4955-BA27-E7380D35203B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84D17D24-096E-4955-BA27-E7380D35203B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84D17D24-096E-4955-BA27-E7380D35203B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7A5D17D-AAC6-4E07-8666-F2242C3F950A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7A5D17D-AAC6-4E07-8666-F2242C3F950A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7A5D17D-AAC6-4E07-8666-F2242C3F950A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7A5D17D-AAC6-4E07-8666-F2242C3F950A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{865EFB24-BE03-4B46-A901-E6B4F6D72415}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{865EFB24-BE03-4B46-A901-E6B4F6D72415}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{865EFB24-BE03-4B46-A901-E6B4F6D72415}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{865EFB24-BE03-4B46-A901-E6B4F6D72415}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A3E7738-DCA9-4C35-A4DF-C9A3F09EF299}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A3E7738-DCA9-4C35-A4DF-C9A3F09EF299}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A3E7738-DCA9-4C35-A4DF-C9A3F09EF299}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A3E7738-DCA9-4C35-A4DF-C9A3F09EF299}.Release|Any CPU.Build.0 = Release|Any CPU
+		{437FB485-167B-4C6A-AA11-F7CDE65C910D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{437FB485-167B-4C6A-AA11-F7CDE65C910D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{437FB485-167B-4C6A-AA11-F7CDE65C910D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{437FB485-167B-4C6A-AA11-F7CDE65C910D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

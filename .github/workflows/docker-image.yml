@@ -27,10 +27,18 @@ jobs:
     - name: set lower case owner name
       run: |
         echo "OWNER_LC=${OWNER,,}" >>${GITHUB_ENV}
-    - name: Build and push Docker image
+    - name: Build and push Bank Docker image
       uses: docker/build-push-action@v2
       with:
         context: .
         push: true
         file: src/Bank/Dockerfile
         tags: ghcr.io/nikolaysavenko/bank:${{github.run_id}}
+
+    - name: Build and push BankOrleans Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        file: src/BankOrleans/Dockerfile
+        tags: ghcr.io/nikolaysavenko/bankorleans:${{github.run_id}}
