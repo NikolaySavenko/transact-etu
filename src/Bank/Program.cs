@@ -1,4 +1,8 @@
+using System.Text;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
@@ -8,7 +12,7 @@ builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<BankContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQL")));
-
+builder.Services.AddHostedService<TransferConsumer>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -113,6 +117,29 @@ api.MapPost("/optimisticTransfer", async (TransferCommand command, BankContext c
     }
 });
 
+var rabbitMqHostName = builder.Configuration["RabbitMQ:Host"];
+//transferEnqueue   (using RabbitMQ.Client)
+api.MapPost("/transferEnqueue", (TransferCommand command, BankContext context) =>
+{
+    var factory = new ConnectionFactory() { HostName = rabbitMqHostName };
+    using var connection = factory.CreateConnection();
+    using var channel = connection.CreateModel();
+    channel.QueueDeclare(queue: "transfer",
+                         durable: false,
+                         exclusive: false,
+                         autoDelete: false,
+                         arguments: null);
+
+    var body = JsonSerializer.Serialize(command);
+    var bodyBytes = Encoding.UTF8.GetBytes(body);
+    channel.BasicPublish(exchange: "",
+                         routingKey: "transfer",
+                         basicProperties: null,
+                         body: bodyBytes);
+    return Results.Ok();
+});
+
+
 
 app.Run();
 
@@ -146,3 +173,75 @@ public class BankContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 }
+
+public class TransferConsumer : BackgroundService
+{
+    private readonly ILogger<TransferConsumer> _logger;
+    private readonly BankContext _context;
+    private IConnection _connection;
+	private IModel _channel;
+
+    public TransferConsumer(ILogger<TransferConsumer> logger, BankContext context, IConfiguration configuration)
+    {
+        _logger = logger;
+        _context = context;
+        var factory = new ConnectionFactory() { HostName = configuration["RabbitMQ:Host"] };
+        _connection = factory.CreateConnection();
+        _channel = _connection.CreateModel();
+        // all instances of app should process messages in queue sequentially
+        // new messsage can be consumed only in previous is completed
+        // worker should block message processing until it is completed
+        _channel.BasicQos(0, 1, false);
+        _channel.QueueDeclare(queue: "transfer",
+                             durable: false,
+                             exclusive: false,
+                             autoDelete: false,
+                             arguments: null);
+    }
+
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        var consumer = new EventingBasicConsumer(_channel);
+        consumer.Received += async (model, ea) =>
+        {
+            var body = ea.Body.ToArray();
+            var message = Encoding.UTF8.GetString(body);
+            var command = JsonSerializer.Deserialize<TransferCommand>(message);
+            _logger.LogInformation($"Starting transfer command {command.From} -> {command.To} : {command.Amount}");
+            using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+            try
+            {
+                var account = await _context.Accounts.FindAsync(command.From);
+                _logger.LogInformation($"From Account {account.Id} has balance {account.Balance}");
+                account.Balance -= command.Amount;
+
+                var toAccount = await _context.Accounts.FindAsync(command.To);
+                _logger.LogInformation($"To Account {toAccount.Id} has balance {toAccount.Balance}");
+                toAccount.Balance += command.Amount;
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error transferring money");
+                await transaction.RollbackAsync();
+                // _channel.BasicNack(ea.DeliveryTag, false, true);
+            }
+            _channel.BasicAck(ea.DeliveryTag, false);
+            _logger.LogInformation($"Done transfer command {command.From} -> {command.To} : {command.Amount}");
+        };
+        _channel.BasicConsume(queue: "transfer",
+                             autoAck: false,
+                             consumer: consumer);
+        return Task.CompletedTask;
+    }
+
+    public override void Dispose()
+    {
+        _channel.Close();
+        _connection.Close();
+        base.Dispose();
+    }
+}
+    
